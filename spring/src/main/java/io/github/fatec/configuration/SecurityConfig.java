@@ -14,9 +14,28 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:8082", "http://localhost:19006"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -29,8 +48,8 @@ public class SecurityConfig {
             UserDetailsService userDetailsService) throws Exception {
         AuthenticationManagerBuilder builder = httpSecurity
                 .getSharedObject(AuthenticationManagerBuilder.class);
-        builder.userDetailsService(userDetailsService).
-                passwordEncoder(passwordEncoder);
+        builder.userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder);
         return builder.build();
     }
 
@@ -40,9 +59,10 @@ public class SecurityConfig {
             HttpSecurity httpSecurity,
             UserDetailsService userDetails) throws Exception {
         JwtAuthFilterSecurity jwtFilter = new JwtAuthFilterSecurity(jwtSecurity, userDetails);
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(sm -> sm.sessionCreationPolicy(
-                        SessionCreationPolicy.STATELESS))
+        httpSecurity
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/fatec/login/user/save/**",

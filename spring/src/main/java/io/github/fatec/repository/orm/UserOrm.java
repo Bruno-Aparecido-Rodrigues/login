@@ -11,7 +11,7 @@ import java.util.List;
 public record UserOrm(
         @Id
         String id,
-        @Indexed
+        @Indexed(unique = true)
         String username,
         String password,
         String email,

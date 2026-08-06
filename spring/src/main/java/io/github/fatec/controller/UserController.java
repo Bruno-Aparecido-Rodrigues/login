@@ -8,6 +8,10 @@ import io.github.fatec.entity.User;
 import io.github.fatec.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 
@@ -62,5 +66,11 @@ public class UserController {
                 user.email(),
                 user.cep(),
                 user.roles());
+    }
+
+    @ExceptionHandler(DuplicateKeyException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleDuplicate(DuplicateKeyException e) {
+        return "Usuário já existe";
     }
 }
