@@ -69,7 +69,9 @@ public class SecurityConfig {
                                 "/fatec/login/user/save/**",
                                 "/fatec/login/auth",
                                 "/fatec/login/auth/**",
-                                "/fatec/login/auth/cookie")  // ← adiciona essa linha
+                                "/fatec/login/v1/create",
+                                "/fatec/login/auth/cookie",
+                                "/fatec/login/v1/logout")
                         .permitAll()
                         .requestMatchers("/fatec/login/user/save/admin/**")
                         .hasRole("ADMIN")

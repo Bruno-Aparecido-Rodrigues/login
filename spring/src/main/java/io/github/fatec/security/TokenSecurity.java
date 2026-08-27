@@ -32,13 +32,10 @@ public class TokenSecurity {
         return new Token(jwtSecurity.generateToken(userDetails));
     }
 
-    public AuthUserDetails autenticar(Login login){
-        UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(
-                        login.username(),
-                        login.password());
+    public AuthUserDetails autenticar(Login login) {
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                login.username(), login.password());
         authenticationManager.authenticate(authToken);
-        return (AuthUserDetails) userDetailsService
-                .loadUserByUsername(login.username());
+        return (AuthUserDetails) userDetailsService.loadUserByUsername(login.username());
     }
 }

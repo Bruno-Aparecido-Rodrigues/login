@@ -19,6 +19,10 @@ public class JwtSecurity {
         return SECRET.getBytes();
     }
 
+    public long getExpirationSeconds() {
+        return EXP / 1000;
+    }
+
     public String generateToken(UserDetails user) {
         Date date = new Date();
         SecretKey key = Keys.hmacShaKeyFor(getSecret());
@@ -44,10 +48,6 @@ public class JwtSecurity {
     public boolean isTokenValid(String token, UserDetails user) {
         String username = getUsername(token);
         return username.equals(user.getUsername()) && !isExpired(token);
-    }
-
-    public long getExpirationSeconds() {
-        return EXP / 1000;
     }
 
     private Claims parseClaims(String token) {
