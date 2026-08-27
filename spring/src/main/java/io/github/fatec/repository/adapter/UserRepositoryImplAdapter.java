@@ -12,11 +12,22 @@ public class UserRepositoryImplAdapter {
         return new User(
                 orm.id(),
                 orm.username(),
-                passwordEncoder.encode(orm.password()),
+                orm.password(),
                 orm.email(),
                 orm.cep(),
                 orm.roles());
     }
+
+    public static UserOrm cast(User user, PasswordEncoder passwordEncoder) {
+        return new UserOrm(
+                user.id(),
+                user.username(),
+                passwordEncoder.encode(user.password()),
+                user.email(),
+                user.cep(),
+                user.roles());
+    }
+
 
     public static UserOrm cast(User user) {
         return new UserOrm(

@@ -23,15 +23,15 @@ public class UserRepositoryImpl implements UserRepository {
         this.repository = repository;
     }
 
-    @Override
-    public User save(User user) {
-        try {
-            UserOrm orm = repository.save(UserRepositoryImplAdapter.cast(user));
-            return UserRepositoryImplAdapter.cast(orm, encoder);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+@Override
+public User save(User user) {
+    try {
+        UserOrm orm = repository.save(UserRepositoryImplAdapter.cast(user, encoder));
+        return UserRepositoryImplAdapter.cast(orm, encoder);
+    } catch (Exception ex) {
+        throw new RuntimeException(ex);
     }
+}
 
     @Override
     public User update(User user) {
