@@ -6,18 +6,16 @@ import io.github.fatec.controller.request.UserUpdateRequest;
 import io.github.fatec.controller.response.UserResponse;
 import io.github.fatec.entity.User;
 import io.github.fatec.repository.UserRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/fatec/login")
 public class UserController {
+
     private final UserRepository repository;
 
     public UserController(UserRepository repository) {

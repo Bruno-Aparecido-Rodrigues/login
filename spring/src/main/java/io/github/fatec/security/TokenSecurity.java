@@ -2,6 +2,7 @@ package io.github.fatec.security;
 
 import io.github.fatec.entity.Login;
 import io.github.fatec.entity.Token;
+import io.github.fatec.security.dto.AuthUserDetails;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,5 +30,15 @@ public class TokenSecurity {
         authenticationManager.authenticate(authToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(login.username());
         return new Token(jwtSecurity.generateToken(userDetails));
+    }
+
+    public AuthUserDetails autenticar(Login login){
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(
+                        login.username(),
+                        login.password());
+        authenticationManager.authenticate(authToken);
+        return (AuthUserDetails) userDetailsService
+                .loadUserByUsername(login.username());
     }
 }

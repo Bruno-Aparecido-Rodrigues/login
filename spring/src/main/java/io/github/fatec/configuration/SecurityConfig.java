@@ -65,8 +65,11 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/fatec/login/user/save",
                                 "/fatec/login/user/save/**",
-                                "/fatec/login/auth/**")
+                                "/fatec/login/auth",
+                                "/fatec/login/auth/**",
+                                "/fatec/login/auth/cookie")  // ← adiciona essa linha
                         .permitAll()
                         .requestMatchers("/fatec/login/user/save/admin/**")
                         .hasRole("ADMIN")

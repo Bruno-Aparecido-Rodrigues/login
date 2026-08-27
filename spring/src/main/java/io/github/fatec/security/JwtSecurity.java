@@ -46,6 +46,10 @@ public class JwtSecurity {
         return username.equals(user.getUsername()) && !isExpired(token);
     }
 
+    public long getExpirationSeconds() {
+        return EXP / 1000;
+    }
+
     private Claims parseClaims(String token) {
         SecretKey secretKey = Keys.hmacShaKeyFor(getSecret());
         return Jwts.parser()
