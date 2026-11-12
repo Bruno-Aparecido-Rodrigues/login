@@ -3,20 +3,31 @@ package io.github.fatec.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
 public class JwtSecurity {
-    private static final String SECRET = "u7x!A$9zLq#2vNf@eR6tYpWmZcXbGdQh";
     private static final long EXP = 2L * 600 * 1000;
 
+    private final byte[] secret;
+
+    public JwtSecurity(@Value("${app.jwt.secret}") String secret) {
+        byte[] bytes = secret.getBytes(StandardCharsets.UTF_8);
+        if (bytes.length < 32) {
+            throw new IllegalStateException("JWT_SECRET precisa ter pelo menos 32 caracteres");
+        }
+        this.secret = bytes;
+    }
+
     private byte[] getSecret() {
-        return SECRET.getBytes();
+        return secret;
     }
 
     public long getExpirationSeconds() {

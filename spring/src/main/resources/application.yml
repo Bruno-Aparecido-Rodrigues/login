@@ -1,9 +1,19 @@
 server:
-  port: 8081
+  # O Render injeta a porta na variável PORT; localmente continua 8081
+  port: ${PORT:8081}
+
 spring:
   application:
     name: login
   data:
     mongodb:
       auto-index-creation: true
-      uri: mongodb+srv://teste:teste123@newcluster.xisxqqc.mongodb.net/Fatec
+      uri: ${MONGODB_URI:mongodb+srv://teste:teste123@newcluster.xisxqqc.mongodb.net/Fatec}
+
+app:
+  jwt:
+    # mínimo de 32 caracteres (HS256)
+    secret: '${JWT_SECRET:u7x!A$9zLq#2vNf@eR6tYpWmZcXbGdQh}'
+  cors:
+    # lista separada por vírgula, aceita padrões (ex.: https://*.onrender.com)
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:8082,http://localhost:19006}

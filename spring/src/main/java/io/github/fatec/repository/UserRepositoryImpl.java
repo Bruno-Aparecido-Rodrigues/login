@@ -36,10 +36,13 @@ public User save(User user) {
     @Override
     public User update(User user) {
         try {
-            if (!repository.existsById(user.id())) {
-                throw new RuntimeException("Usuário não encontrado: " + user.id());
-            }
-            UserOrm orm = repository.save(UserRepositoryImplAdapter.cast(user));
+            UserOrm current = repository.findById(user.id())
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + user.id()));
+            // senha vazia mantém a atual; senha nova é gravada com hash (antes ia em texto puro e o login quebrava)
+            UserOrm orm = (user.password() == null || user.password().isBlank())
+                    ? repository.save(UserRepositoryImplAdapter.cast(new User(user.id(), user.username(),
+                            current.password(), user.email(), user.cep(), user.roles())))
+                    : repository.save(UserRepositoryImplAdapter.cast(user, encoder));
             return UserRepositoryImplAdapter.cast(orm, encoder);
         } catch (RuntimeException ex) {
             throw ex;

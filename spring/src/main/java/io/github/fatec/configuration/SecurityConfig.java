@@ -2,6 +2,7 @@ package io.github.fatec.configuration;
 
 import io.github.fatec.security.JwtAuthFilterSecurity;
 import io.github.fatec.security.JwtSecurity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,10 +24,16 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
+    private final List<String> allowedOrigins;
+
+    public SecurityConfig(@Value("${app.cors.allowed-origins}") List<String> allowedOrigins) {
+        this.allowedOrigins = allowedOrigins;
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:8082", "http://localhost:19006"));
+        config.setAllowedOriginPatterns(allowedOrigins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
@@ -64,7 +71,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // regra de admin antes do permitAll, senão "/user/save/**" libera tudo
+                        .requestMatchers("/fatec/login/user/save/admin/**")
+                        .hasRole("ADMIN")
                         .requestMatchers(
+                                "/health",
+                                "/error",
                                 "/fatec/login/user/save",
                                 "/fatec/login/user/save/**",
                                 "/fatec/login/auth",
@@ -73,8 +85,6 @@ public class SecurityConfig {
                                 "/fatec/login/auth/cookie",
                                 "/fatec/login/v1/logout")
                         .permitAll()
-                        .requestMatchers("/fatec/login/user/save/admin/**")
-                        .hasRole("ADMIN")
                         .anyRequest()
                         .authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

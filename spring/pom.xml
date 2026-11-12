@@ -62,14 +62,6 @@
             <scope>compile</scope>
         </dependency>
         <!-- DOMAIN -->
-
-        <!-- TEST -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- TEST -->
     </dependencies>
 
     <build>
@@ -78,6 +70,42 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!-- GraalVM: mvn -Pnative native:compile (versão gerenciada pelo spring-boot-starter-parent) -->
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <configuration>
+                    <imageName>login</imageName>
+                    <buildArgs>
+                        <!-- roda em qualquer CPU x86-64 (o runner do GitHub e o Render podem ter CPUs diferentes) -->
+                        <buildArg>-march=compatibility</buildArg>
+                    </buildArgs>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Binário 100% estático com musl, para rodar no Alpine (que não tem glibc).
+             Uso: mvn -Pnative,musl native:compile  (precisa da imagem graalvm ...-muslib) -->
+        <profile>
+            <id>musl</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <configuration>
+                            <buildArgs combine.children="append">
+                                <buildArg>--static</buildArg>
+                                <buildArg>--libc=musl</buildArg>
+                                <!-- musl usa só 128 KB de stack por thread; sobe para 2 MB -->
+                                <buildArg>-H:CCompilerOption=-Wl,-z,stack-size=2097152</buildArg>
+                            </buildArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
